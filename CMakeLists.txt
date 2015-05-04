@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project(YOURAPPNAME)
 
-SET(OPIFEX_ENGINE_REPOSITORY CACHE STRING “../OPengine/")
+SET(OPIFEX_ENGINE_REPOSITORY CACHE STRING "../OPengine/")
 
 # Sets up all of your application needs
 # it then sets up all of the OPifex Engine links
