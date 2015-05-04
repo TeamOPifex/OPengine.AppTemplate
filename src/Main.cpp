@@ -1,7 +1,7 @@
 //////////////////////////////////////
 // Application Entry Point
 //////////////////////////////////////
-#include "./Engine.h"
+#include "./OPengine.h"
 
 //////////////////////////////////////
 // Application Methods
@@ -9,7 +9,7 @@
 
 void ApplicationInit() {
 	OPchar* assetDir = NULL;
-#ifdef OPIFEX_REPO
+#ifdef OPIFEX_ASSETS
 	assetDir = OPIFEX_ASSETS;
 #endif
 	OPloadersAddDefault();

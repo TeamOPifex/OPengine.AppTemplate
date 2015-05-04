@@ -48,7 +48,7 @@ else()
 
 	# Only copy assets if we're in release mode
 	# It pulls from the Repository otherwise
-	if(${OPIFEX_RELEASE})
+	if(${OPIFEX_OPTION_RELEASE})
 
 		copy_source_group("${PROJECT_SOURCE_DIR}/Assets/Audio" ${PROJECT_BINARY_DIR}/assets/Audio)	
 		copy_source_group("${PROJECT_SOURCE_DIR}/Assets/Characters" ${PROJECT_BINARY_DIR}/assets/Characters)	
