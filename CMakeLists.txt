@@ -34,7 +34,7 @@ add_source_group(src "${PROJECT_SOURCE_DIR}/src" APPLICATION_SRC)
 # Application BUILD
 add_executable(9_Application ${APPLICATION_SRC})
 add_opifex_definitions(9_Application "")
-set_target_properties(9_Application PROPERTIES OUTPUT_NAME “YOURAPPNAME”)
+set_target_properties(9_Application PROPERTIES OUTPUT_NAME "YOURAPPNAME")
 add_opifex_libraries(9_Application)
 add_opifex_assets(9_Application)
 
