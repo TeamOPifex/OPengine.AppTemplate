@@ -115,13 +115,12 @@
                 <!-- <nocompress /> forces no compression on any files in assets or res/raw -->
                 <nocompress extension="dds" />
                 <nocompress extension="obj" />
+                <nocompress extension="opf" />
                 <nocompress extension="opm" />
                 <nocompress extension="vert" />
                 <nocompress extension="frag" />
-                <nocompress extension="opf" />
-                <nocompress extension="opss" />
-                <nocompress extension="chr" />
-                <nocompress extension="qb" />
+                <nocompress extension="js" />
+                <nocompress extension="ops" />
             </aapt>
         </do-only-if-not-library>
     </target>

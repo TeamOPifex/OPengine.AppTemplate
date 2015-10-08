@@ -20,27 +20,32 @@
 
 LOCAL_PATH:= $(call my-dir)
 
-PROJECT_PATH:= $(LOCAL_PATH)/../@OPIFEX_REPOSITORY@
-ENGINE_PATH:= $(LOCAL_PATH)/../@OPIFEX_ENGINE_REPOSITORY@
-BINARIES_PATH:= $(LOCAL_PATH)/../@OPIFEX_BINARIES@
+PROJECT_PATH:= @PROJECT_SOURCE_DIR@
+
+NDK_APP_OUT := $(LOCAL_PATH)/../Binaries/android
+BINARIES := $(NDK_APP_OUT)
+
 
 ##############
 # LIBOGG
 ##############
 include $(CLEAR_VARS)
 LOCAL_MODULE    := libogg
-LOCAL_SRC_FILES := ../$(BINARIES_PATH)/android/libogg.a
+LOCAL_SRC_FILES := ../$(NDK_APP_OUT)/libogg.a
 include $(PREBUILT_STATIC_LIBRARY)
+
 
 ##############
 # LIBVORBIS
 ##############
 include $(CLEAR_VARS)
 LOCAL_MODULE    := libvorbis
-LOCAL_SRC_FILES := ../$(BINARIES_PATH)/android/libvorbis.a
+LOCAL_SRC_FILES := ../$(NDK_APP_OUT)/libvorbis.a
 LOCAL_STATIC_LIBRARIES := libogg
 
 include $(PREBUILT_STATIC_LIBRARY)
+
+
 
 
 ##############
@@ -50,9 +55,9 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE := lodepng
 
-LOCAL_C_INCLUDES :=$(ENGINE_PATH)
+LOCAL_C_INCLUDES :=$(PROJECT_PATH)
 
-MY_LOCAL_SRC_FILES := $(wildcard $(ENGINE_PATH)/External/LodePNG/src/*.cpp)
+MY_LOCAL_SRC_FILES := $(wildcard $(PROJECT_PATH)/External/LodePNG/src/*.cpp)
 
 LOCAL_SRC_FILES := $(subst jni/, , $(MY_LOCAL_SRC_FILES))
 
@@ -66,10 +71,20 @@ include $(BUILD_STATIC_LIBRARY)
 # core lib, which will be built statically
 ##############
 include $(CLEAR_VARS)
-LOCAL_MODULE    := libopifex-core 
-LOCAL_SRC_FILES := ../$(BINARIES_PATH)/android/libopifex-core.a
+LOCAL_MODULE    := libopifex-core
+LOCAL_CFLAGS := -D@OPIFEX_OS@
 
-include $(PREBUILT_STATIC_LIBRARY)
+LOCAL_C_INCLUDES :=$(PROJECT_PATH)
+#CORE_LIST_C := $(wildcard $(PROJECT_PATH)/Core/src/*.c)
+
+MY_LOCAL_SRC_FILES := $(wildcard $(PROJECT_PATH)/Core/src/*.c)
+LOCAL_SRC_FILES := $(subst jni/, , $(MY_LOCAL_SRC_FILES))
+
+#LOCAL_SRC_FILES := \
+#       $(CORE_LIST_C:$(PROJECT_PATH)/%=%)
+        
+LOCAL_STATIC_LIBRARIES := android_native_app_glue
+include $(BUILD_STATIC_LIBRARY)
 
 
 
@@ -78,11 +93,17 @@ include $(PREBUILT_STATIC_LIBRARY)
 # data lib, which will be built statically
 ##############
 include $(CLEAR_VARS)
-LOCAL_MODULE    := libopifex-data 
-LOCAL_SRC_FILES := ../$(BINARIES_PATH)/android/libopifex-data.a
-LOCAL_STATIC_LIBRARIES := libopifex-core
+LOCAL_MODULE    := libopifex-data
 
-include $(PREBUILT_STATIC_LIBRARY)
+LOCAL_C_INCLUDES :=$(PROJECT_PATH)
+LOCAL_CFLAGS := -D@OPIFEX_OS@
+
+MY_LOCAL_SRC_FILES := $(wildcard $(PROJECT_PATH)/Data/*.cpp)
+MY_LOCAL_SRC_FILES += $(wildcard $(PROJECT_PATH)/Data/src/*.c)
+LOCAL_SRC_FILES := $(subst jni/, , $(MY_LOCAL_SRC_FILES))
+
+LOCAL_STATIC_LIBRARIES := libopifex-core
+include $(BUILD_STATIC_LIBRARY)
 
 
 ##############
@@ -90,22 +111,39 @@ include $(PREBUILT_STATIC_LIBRARY)
 # math lib, which will be built statically
 ##############
 include $(CLEAR_VARS)
-LOCAL_MODULE    := libopifex-math 
-LOCAL_SRC_FILES := ../$(BINARIES_PATH)/android/libopifex-math.a
-LOCAL_STATIC_LIBRARIES := libopifex-data
+LOCAL_MODULE    := libopifex-math
 
-include $(PREBUILT_STATIC_LIBRARY)
+LOCAL_C_INCLUDES :=$(PROJECT_PATH)
+LOCAL_CFLAGS := -D@OPIFEX_OS@
+
+MY_LOCAL_SRC_FILES := $(wildcard $(PROJECT_PATH)/Math/*.cpp)
+MY_LOCAL_SRC_FILES += $(wildcard $(PROJECT_PATH)/Math/src/*.c)
+MY_LOCAL_SRC_FILES += $(wildcard $(PROJECT_PATH)/Math/src/*.cpp)
+LOCAL_SRC_FILES := $(subst jni/, , $(MY_LOCAL_SRC_FILES))
+
+LOCAL_STATIC_LIBRARIES := libopifex-data
+include $(BUILD_STATIC_LIBRARY)
+
 
 ##############
 # 4_PERFORMANCE
 # performance lib, which will be built statically
 ##############
 include $(CLEAR_VARS)
-LOCAL_MODULE    := libopifex-performance 
-LOCAL_SRC_FILES := ../$(BINARIES_PATH)/android/libopifex-performance.a
+LOCAL_MODULE    := libopifex-performance
+LOCAL_CFLAGS := -D@OPIFEX_OS@ #-DOPIFEX_PHYSICS -DNDEBUG
+
+LOCAL_C_INCLUDES :=$(PROJECT_PATH)
+LOCAL_C_INCLUDES +=$(PROJECT_PATH)/External/PhysX/IncludeAndroid
+
+MY_LOCAL_SRC_FILES := $(wildcard $(PROJECT_PATH)/Performance/src/*.cpp)
+MY_LOCAL_SRC_FILES += $(wildcard $(PROJECT_PATH)/Performance/src/*.c)
+LOCAL_SRC_FILES := $(subst jni/, , $(MY_LOCAL_SRC_FILES))
+
 LOCAL_STATIC_LIBRARIES := libopifex-math
 
-include $(PREBUILT_STATIC_LIBRARY)
+include $(BUILD_STATIC_LIBRARY)
+
 
 
 ##############
@@ -113,36 +151,78 @@ include $(PREBUILT_STATIC_LIBRARY)
 # human lib, which will be built statically
 ##############
 include $(CLEAR_VARS)
-LOCAL_MODULE    := libopifex-human 
-LOCAL_SRC_FILES := ../$(BINARIES_PATH)/android/libopifex-human.a
-LOCAL_STATIC_LIBRARIES := libopifex-performance libvorbis lodepng
+LOCAL_MODULE    := libopifex-human
+LOCAL_LDLIBS    := -llog -lGLESv2 -lOpenSLES
+LOCAL_CFLAGS    := -Werror
+LOCAL_CFLAGS 	+= -D@OPIFEX_OS@ -DOPIFEX_OPENGL_ES -DOPIFEX_OPENGL_ES_2
 
-include $(PREBUILT_STATIC_LIBRARY)
+LOCAL_C_INCLUDES :=$(PROJECT_PATH)
+LOCAL_C_INCLUDES +=$(PROJECT_PATH)/External/Ogg/include
+LOCAL_C_INCLUDES +=$(PROJECT_PATH)/External/Vorbis/include
 
+MY_LOCAL_SRC_FILES := $(wildcard $(PROJECT_PATH)/Human/src/Audio/*.cpp)
+MY_LOCAL_SRC_FILES += $(wildcard $(PROJECT_PATH)/Human/src/Audio/src/*.cpp)
+MY_LOCAL_SRC_FILES += $(wildcard $(PROJECT_PATH)/Human/src/Input/*.cpp)
+MY_LOCAL_SRC_FILES += $(wildcard $(PROJECT_PATH)/Human/src/Math/*.cpp)
+MY_LOCAL_SRC_FILES += $(wildcard $(PROJECT_PATH)/Human/src/Rendering/*.cpp)
+MY_LOCAL_SRC_FILES += $(wildcard $(PROJECT_PATH)/Human/src/Rendering/GL/*.cpp)
+MY_LOCAL_SRC_FILES += $(wildcard $(PROJECT_PATH)/Human/src/Rendering/Font/*.cpp)
+MY_LOCAL_SRC_FILES += $(wildcard $(PROJECT_PATH)/Human/src/Rendering/Primitives/*.cpp)
+MY_LOCAL_SRC_FILES += $(wildcard $(PROJECT_PATH)/Human/src/Rendering/Skinning/*.cpp)
+MY_LOCAL_SRC_FILES += $(wildcard $(PROJECT_PATH)/Human/src/Rendering/Sprite/*.cpp)
+MY_LOCAL_SRC_FILES += $(wildcard $(PROJECT_PATH)/Human/src/Systems/*.cpp)
+MY_LOCAL_SRC_FILES += $(wildcard $(PROJECT_PATH)/Human/src/Utilities/*.cpp)
 
+LOCAL_SRC_FILES := $(subst jni/, , $(MY_LOCAL_SRC_FILES))
+
+LOCAL_STATIC_LIBRARIES := libopifex-performance libvorbis -lstdc++ lodepng
+LOCAL_STATIC_LIBRARIES += android_native_app_glue
+
+include $(BUILD_STATIC_LIBRARY)
 
 ##############
 # 6_Communication
-# communication lib, which will be built statically
+# scripting lib, which will be built statically
 ##############
 include $(CLEAR_VARS)
-LOCAL_MODULE    := libopifex-communication 
-LOCAL_SRC_FILES := ../$(BINARIES_PATH)/android/libopifex-communication.a
+LOCAL_MODULE    := libopifex-communication
+LOCAL_LDLIBS    := -llog -lGLESv2 -lOpenSLES
+LOCAL_CFLAGS    := -Werror
+LOCAL_CFLAGS 	+= -D@OPIFEX_OS@ -DOPIFEX_OPENGL_ES -DOPIFEX_OPENGL_ES_2
+
+LOCAL_C_INCLUDES :=$(PROJECT_PATH)
+
+MY_LOCAL_SRC_FILES := $(wildcard $(PROJECT_PATH)/Communication/src/*.cpp)
+LOCAL_SRC_FILES := $(subst jni/, , $(MY_LOCAL_SRC_FILES))
+
 LOCAL_STATIC_LIBRARIES := libopifex-human
 
-include $(PREBUILT_STATIC_LIBRARY)
-
+include $(BUILD_STATIC_LIBRARY)
 
 ##############
 # 7_SCRIPTING
 # scripting lib, which will be built statically
 ##############
 include $(CLEAR_VARS)
-LOCAL_MODULE    := libopifex-scripting 
-LOCAL_SRC_FILES := ../$(BINARIES_PATH)/android/libopifex-scripting.a
-LOCAL_STATIC_LIBRARIES := libopifex-communication
+LOCAL_MODULE    := libopifex-scripting
+LOCAL_LDLIBS    := -llog -lGLESv2 -lOpenSLES
+LOCAL_CFLAGS    := -Werror
+LOCAL_CFLAGS 	+= -D@OPIFEX_OS@ -DOPIFEX_OPENGL_ES -DOPIFEX_OPENGL_ES_2
 
-include $(PREBUILT_STATIC_LIBRARY)
+LOCAL_C_INCLUDES :=$(PROJECT_PATH)
+LOCAL_C_INCLUDES +=$(PROJECT_PATH)/Communication
+LOCAL_C_INCLUDES +=$(PROJECT_PATH)/External/Ogg/include
+LOCAL_C_INCLUDES +=$(PROJECT_PATH)/External/Vorbis/include
+LOCAL_C_INCLUDES +=$(PROJECT_PATH)/External/V8/
+LOCAL_C_INCLUDES +=$(PROJECT_PATH)/External/V8/include
+
+MY_LOCAL_SRC_FILES := $(wildcard $(PROJECT_PATH)/Scripting/src/*.cpp)
+MY_LOCAL_SRC_FILES += $(wildcard $(PROJECT_PATH)/Scripting/src/wrappers/*.cpp)
+LOCAL_SRC_FILES := $(subst jni/, , $(MY_LOCAL_SRC_FILES))
+
+LOCAL_STATIC_LIBRARIES := libopifex-pipeline
+
+include $(BUILD_STATIC_LIBRARY)
 
 
 ##############
@@ -150,11 +230,20 @@ include $(PREBUILT_STATIC_LIBRARY)
 # pipeline lib, which will be built statically
 ##############
 include $(CLEAR_VARS)
-LOCAL_MODULE    := libopifex-pipeline 
-LOCAL_SRC_FILES := ../$(BINARIES_PATH)/android/libopifex-pipeline.a
-LOCAL_STATIC_LIBRARIES := libopifex-scripting
+LOCAL_MODULE    := libopifex-pipeline
+LOCAL_CFLAGS 	:= -D@OPIFEX_OS@ -DOPIFEX_OPENGL_ES -DOPIFEX_OPENGL_ES_2
 
-include $(PREBUILT_STATIC_LIBRARY)
+LOCAL_C_INCLUDES :=$(PROJECT_PATH)
+LOCAL_C_INCLUDES +=$(PROJECT_PATH)/External/Ogg/include
+LOCAL_C_INCLUDES +=$(PROJECT_PATH)/External/Vorbis/include
+
+MY_LOCAL_SRC_FILES := $(wildcard $(PROJECT_PATH)/Pipeline/src/*.cpp)
+MY_LOCAL_SRC_FILES += $(wildcard $(PROJECT_PATH)/Pipeline/src/Loaders/*.cpp)
+LOCAL_SRC_FILES := $(subst jni/, , $(MY_LOCAL_SRC_FILES))
+
+LOCAL_STATIC_LIBRARIES := libopifex-communication
+
+include $(BUILD_STATIC_LIBRARY)
 
 
 ##############
@@ -163,26 +252,44 @@ include $(PREBUILT_STATIC_LIBRARY)
 ##############
 include $(CLEAR_VARS)
 LOCAL_MODULE    := libopengine
-LOCAL_LDLIBS    := -llog -lGLESv2 -landroid -lOpenSLES
+LOCAL_LDLIBS    := -llog -lGLESv2 -landroid -lOpenSLES -lEGL
 
-LOCAL_ALLOW_UNDEFINED_SYMBOLS := false
+TARGET_PLATFORM := 16
+
+#LOCAL_LDFLAGS := -Wl,--start-group \
+#	$(BINARIES)/libPhysX3Common.a \
+#	$(BINARIES)/libPvdRuntime.a \
+#	$(BINARIES)/libSimulationController.a \
+#	$(BINARIES)/libSceneQuery.a \
+#	$(BINARIES)/libLowLevel.a \
+#	$(BINARIES)/libLowLevelCloth.a \
+#	$(BINARIES)/libPhysX3.a \
+#	$(BINARIES)/libPhysX3Vehicle.a \
+#	$(BINARIES)/libPhysX3Cooking.a \
+#	$(BINARIES)/libPhysX3Extensions.a \
+#	$(BINARIES)/libPhysX3CharacterKinematic.a \
+#	$(BINARIES)/libPhysXProfileSDK.a \
+#	$(BINARIES)/libPxTask.a \
+#	$(BINARIES)/libPhysXVisualDebuggerSDK.a \
+#	-Wl,--end-group
+	
+# LOCAL_ALLOW_UNDEFINED_SYMBOLS := false
 
 LOCAL_C_INCLUDES :=$(PROJECT_PATH)
-LOCAL_C_INCLUDES +=$(ENGINE_PATH)
-LOCAL_C_INCLUDES +=$(ENGINE_PATH)/External/Ogg/include
-LOCAL_C_INCLUDES +=$(ENGINE_PATH)/External/Vorbis/include
-LOCAL_CFLAGS += -D@OPIFEX_OS@ -DOPIFEX_OPENGL_ES -DOPIFEX_OPENGL_ES_2 -frtti
+LOCAL_C_INCLUDES +=$(PROJECT_PATH)/Application
+LOCAL_C_INCLUDES +=$(PROJECT_PATH)/Application/Examples
+LOCAL_C_INCLUDES +=$(PROJECT_PATH)/External/Ogg/include
+LOCAL_C_INCLUDES +=$(PROJECT_PATH)/External/Vorbis/include
+LOCAL_C_INCLUDES +=$(PROJECT_PATH)/External/V8/
+LOCAL_C_INCLUDES +=$(PROJECT_PATH)/External/V8/include
+LOCAL_C_INCLUDES +=$(PROJECT_PATH)/External/PhysX/IncludeAndroid
 
-MY_LOCAL_SRC_FILES := $(wildcard $(PROJECT_PATH)/*.cpp)
-MY_LOCAL_SRC_FILES += $(wildcard $(PROJECT_PATH)/src/*.cpp)
-MY_LOCAL_SRC_FILES += $(wildcard $(PROJECT_PATH)/src/Effects/*.cpp)
-MY_LOCAL_SRC_FILES += $(wildcard $(PROJECT_PATH)/src/Entities/*.cpp)
-MY_LOCAL_SRC_FILES += $(wildcard $(PROJECT_PATH)/src/Handlers/*.cpp)
-MY_LOCAL_SRC_FILES += $(wildcard $(PROJECT_PATH)/src/States/*.cpp)
-MY_LOCAL_SRC_FILES += $(wildcard $(PROJECT_PATH)/src/Utilities/*.cpp)
+LOCAL_CFLAGS += -D@OPIFEX_OS@ -DOPIFEX_OPENGL_ES -DOPIFEX_OPENGL_ES_2
+
+MY_LOCAL_SRC_FILES := $(wildcard $(PROJECT_PATH)/Application/*.cpp)
+MY_LOCAL_SRC_FILES += $(wildcard $(PROJECT_PATH)/Application/Examples/*.cpp)
 
 LOCAL_SRC_FILES := $(subst jni/, , $(MY_LOCAL_SRC_FILES))
-
-LOCAL_STATIC_LIBRARIES := libopifex-pipeline
-
+LOCAL_STATIC_LIBRARIES := android_native_app_glue libopifex-scripting
 include $(BUILD_SHARED_LIBRARY)
+$(call import-module,android/native_app_glue)
