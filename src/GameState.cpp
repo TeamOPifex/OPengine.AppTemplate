@@ -8,7 +8,7 @@ OPint ExampleStateUpdate(OPtimer* time) {
 	return false;
 }
 
-void ExampletateRender(OPfloat delta) {
+void ExampleStateRender(OPfloat delta) {
 	OPrenderClear(0, 0, 0, 1);
 	OPrenderPresent();
 }

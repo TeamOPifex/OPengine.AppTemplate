@@ -20,13 +20,17 @@ int ApplicationUpdate(OPtimer* timer) {
 	return ActiveState->Update(timer);
 }
 
-void ApplicationDestroy() {
+void ApplicationRender(OPfloat delta) {
 	ActiveState->Render(delta);
+}
+
+void ApplicationDestroy() {
 }
 
 void ApplicationSetup() {
 	OPinitialize = ApplicationInit;
 	OPupdate = ApplicationUpdate;
+	OPrender = ApplicationRender;
 	OPdestroy = ApplicationDestroy;
 }
 
