@@ -2,30 +2,26 @@
 // Application Entry Point
 //////////////////////////////////////
 #include "./OPengine.h"
+#include "Main.h"
+#include "GameState.h"
 
 //////////////////////////////////////
 // Application Methods
 //////////////////////////////////////
 
 void ApplicationInit() {
-	OPchar* assetDir = NULL;
-#ifdef OPIFEX_ASSETS
-	assetDir = OPIFEX_ASSETS;
-#endif
 	OPloadersAddDefault();
-	OPcmanInit(assetDir);
-
+	OPcmanInit(OPIFEX_ASSETS);
 	OPrenderInit();
+	OPgameStateChange(&GS_EXAMPLE);
 }
 
 int ApplicationUpdate(OPtimer* timer) {
-	OPrenderClear(0,0,0);
-	OPrenderPresent();
-	return 0;
+	return ActiveState->Update(timer);
 }
 
 void ApplicationDestroy() {
-
+	ActiveState->Render(delta);
 }
 
 void ApplicationSetup() {
@@ -40,9 +36,7 @@ void ApplicationSetup() {
 OP_MAIN {
 	OPlog("Starting up OPifex Engine");
 
-	OPinitialize = ApplicationInit;
-	OPupdate = ApplicationUpdate;
-	OPdestroy = ApplicationDestroy;
+	ApplicationSetup();
 
 	OP_MAIN_START
 	OP_MAIN_END
