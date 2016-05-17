@@ -28,7 +28,9 @@ add_external_opifex_includes()
 
 
 # Application Source Files
-add_source_group(src "${PROJECT_SOURCE_DIR}/src" APPLICATION_SRC)
+# If you change the src folder or add another, you'll need to change it here
+add_source_group_recurse("${PROJECT_SOURCE_DIR}/src" APPLICATION_SRC)
+
 
 # Application BUILD
 if("${OPIFEX_OS}" STREQUAL "OPIFEX_IOS")

@@ -16,7 +16,8 @@ void ApplicationInit() {
 	OPgameStateChange(&GS_EXAMPLE);
 }
 
-int ApplicationUpdate(OPtimer* timer) {
+OPint ApplicationUpdate(OPtimer* timer) {
+    OPrenderUpdate();
 	return ActiveState->Update(timer);
 }
 
@@ -25,6 +26,7 @@ void ApplicationRender(OPfloat delta) {
 }
 
 void ApplicationDestroy() {
+
 }
 
 void ApplicationSetup() {
@@ -38,6 +40,7 @@ void ApplicationSetup() {
 // Application Entry Point
 //////////////////////////////////////
 OP_MAIN {
+	OP_LOG_LEVEL = 2000;
 	OPlog("Starting up OPifex Engine");
 
 	ApplicationSetup();
