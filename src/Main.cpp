@@ -13,11 +13,15 @@ void ApplicationInit() {
 	OPloadersAddDefault();
 	OPcmanInit(OPIFEX_ASSETS);
 	OPrenderInit();
+	OPrenderCreateWindow(NULL, false, true, "OPifex Entertainment", 1280, 720);
 	OPgameStateChange(&GS_EXAMPLE);
 }
 
 OPint ApplicationUpdate(OPtimer* timer) {
     OPrenderUpdate();
+	OPinputSystemUpdate(timer);
+	if (OPkeyboardWasPressed(OPKEY_ESCAPE)) return 1;
+
 	return ActiveState->Update(timer);
 }
 
