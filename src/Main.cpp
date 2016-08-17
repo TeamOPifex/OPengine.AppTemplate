@@ -9,18 +9,30 @@
 // Application Methods
 //////////////////////////////////////
 
+OPwindow mainWindow;
+
 void ApplicationInit() {
+	OPCMAN.Init(OPIFEX_ASSETS);
 	OPloadersAddDefault();
-	OPcmanInit(OPIFEX_ASSETS);
-	OPrenderInit();
-	OPrenderCreateWindow(NULL, false, true, "OPifex Entertainment", 1280, 720);
-	OPgameStateChange(&GS_EXAMPLE);
+
+	OPrenderSetup();
+
+	OPwindowSystemInit();
+	mainWindow.Init(NULL, OPwindowParameters("Main Window", false, 1280, 720));
+
+	OPrenderInit(&mainWindow);
+
+	OPgameState::Change(&GS_EXAMPLE);
 }
 
 OPint ApplicationUpdate(OPtimer* timer) {
-    OPrenderUpdate();
+	if (mainWindow.Update()) {
+		// Window received an exit request
+		return 1;
+	}
+
 	OPinputSystemUpdate(timer);
-	if (OPkeyboardWasPressed(OPKEY_ESCAPE)) return 1;
+	if (OPKEYBOARD.WasPressed(OPkeyboardKey::ESCAPE)) return 1;
 
 	return ActiveState->Update(timer);
 }
@@ -43,13 +55,14 @@ void ApplicationSetup() {
 //////////////////////////////////////
 // Application Entry Point
 //////////////////////////////////////
-OP_MAIN {
-	OP_LOG_LEVEL = 2000;
+OP_MAIN_START
+
+	OPLOGLEVEL = (ui32)OPlogLevel::VERBOSE;
 	OPlog("Starting up OPifex Engine");
 
 	ApplicationSetup();
 
-	OP_MAIN_START
-	OP_MAIN_END
-	OP_MAIN_SUCCESS
-}
+	OP_MAIN_RUN
+	//OP_MAIN_RUN_STEPPED
+
+OP_MAIN_END

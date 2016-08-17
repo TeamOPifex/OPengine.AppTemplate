@@ -29,20 +29,11 @@ add_external_opifex_includes()
 
 # Application Source Files
 # If you change the src folder or add another, you'll need to change it here
-add_source_group_recurse("${PROJECT_SOURCE_DIR}/src" APPLICATION_SRC)
+add_source_group_recurse("${PROJECT_SOURCE_DIR}/src" "" APPLICATION_SRC)
 
 
 # Application BUILD
-if("${OPIFEX_OS}" STREQUAL "OPIFEX_IOS")
-    if(${OPIFEX_OPTION_SHARED})
-    	add_library(9_Application SHARED ${APPLICATION_SRC})
-    else()
-    	add_library(9_Application STATIC ${APPLICATION_SRC})
-    endif()
-    output_library_from_app(9_Application "YOURAPPNAME")
-else()
-    add_executable(9_Application ${APPLICATION_SRC})
-endif()
+add_opifex_executable(9_Application ${APPLICATION_SRC})
 
 add_opifex_definitions(9_Application "")
 add_opifex_defines()
