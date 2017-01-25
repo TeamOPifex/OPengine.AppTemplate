@@ -2,4 +2,11 @@
 
 #include "./OPengine.h"
 
-extern OPgameState GS_EXAMPLE;
+class ExampleState : public OPgameState {
+    void Init(OPgameState* last);
+    OPint Update(OPtimer* time);
+    void Render(OPfloat delta);
+    OPint Exit(OPgameState* next);
+};
+
+extern ExampleState GS_EXAMPLE;

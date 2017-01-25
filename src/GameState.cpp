@@ -1,26 +1,21 @@
 #include "./GameState.h"
 
-void ExampleStateInit(OPgameState* last) {
+
+void ExampleState::Init(OPgameState* last) {
 }
 
 
-OPint ExampleStateUpdate(OPtimer* time) {
+OPint ExampleState::Update(OPtimer* time) {
 	return false;
 }
 
-void ExampleStateRender(OPfloat delta) {
+void ExampleState::Render(OPfloat delta) {
 	OPrenderClear(0, 0, 0, 1);
 	OPrenderPresent();
 }
 
-OPint ExampleStateExit(OPgameState* next) {
+OPint ExampleState::Exit(OPgameState* next) {
 	return 0;
 }
 
-
-OPgameState GS_EXAMPLE = {
-	ExampleStateInit,
-	ExampleStateUpdate,
-	ExampleStateRender,
-	ExampleStateExit
-};
+ExampleState GS_EXAMPLE;
