@@ -30,6 +30,7 @@ add_external_opifex_includes()
 # Application Source Files
 # If you change the src folder or add another, you'll need to change it here
 add_source_group_recurse("${PROJECT_SOURCE_DIR}/src" "" APPLICATION_SRC)
+add_asset_dir(APPLICATION_SRC)
 
 
 # Application BUILD
