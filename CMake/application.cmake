@@ -3,4 +3,5 @@ set(OPIFEX_BINARIES "../Engine/Binaries" CACHE STRING "Directory to Binaries fro
 
 include(${OPIFEX_ENGINE_REPOSITORY}/CMake/engine/binaries.cmake)
 include(${OPIFEX_ENGINE_REPOSITORY}/CMake/engine/opifex.cmake)
+include(${OPIFEX_ENGINE_REPOSITORY}/CMake/engine/android.cmake)
 include(CMake/assets.cmake)
