@@ -11,31 +11,14 @@
 
 OPwindow mainWindow;
 
-
-void GameWrapper(Handle<Object> exports) {
-	OPlog("Wrapping Game");
-
-	SCOPE_AND_ISOLATE;
-
-	Handle<Object> wrapper = JS_NEW_OBJECT();
-	ExampleState::Wrapper(wrapper);
-
-	JS_SET_OBJECT(exports, "ExampleState", wrapper);
-}
-
 void ApplicationInit() {
 	OPCMAN.Init(OPIFEX_ASSETS);
 	OPloadersAddDefault();
-	OPscriptAddLoader();
 
 	OPrenderSetup();
 
 	OPwindowSystemInit();
 	mainWindow.Init(NULL, OPwindowParameters("Main Window", false, 1280, 720));
-
-	// Scripting Setup
-	OPJAVASCRIPTV8_CUSTOMWRAPPER = GameWrapper;
-	OPjavaScriptV8Init();
 
 	OPrenderInit(&mainWindow);
 
