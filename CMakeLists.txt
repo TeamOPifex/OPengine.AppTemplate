@@ -2,13 +2,11 @@ cmake_minimum_required(VERSION 2.8)
 
 project(YOURAPPNAME)
 
-SET(OPIFEX_ENGINE_REPOSITORY CACHE STRING "../OPengine/")
+SET(OPIFEX_APPNAME "YOURAPPNAME")
 
 # Sets up all of your application needs
 # it then sets up all of the OPifex Engine links
 include(CMake/application.cmake)
-
-
 
 
 #########################################
@@ -38,7 +36,7 @@ add_opifex_executable(9_Application ${APPLICATION_SRC})
 
 add_opifex_definitions(9_Application "")
 add_opifex_defines()
-set_target_properties(9_Application PROPERTIES OUTPUT_NAME "YOURAPPNAME")
+set_target_properties(9_Application PROPERTIES OUTPUT_NAME "${OPIFEX_APPNAME}")
 add_opifex_libraries(9_Application)
 add_opifex_assets(9_Application)
 
